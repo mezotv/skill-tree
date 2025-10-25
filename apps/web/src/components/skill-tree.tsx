@@ -36,6 +36,7 @@ export interface SkillNode {
 }
 
 export interface SkillTreeData {
+  occupation: string;
   subjects: string[];
   ages: number[];
   schools: string[];
@@ -147,7 +148,7 @@ const AgeLabelComponent = ({ data }: { data: { label: string } }) => {
 const OccupationNodeComponent = ({
   data,
 }: {
-  data: { occupation: string; imageUrl?: string };
+  data: { occupation: string };
 }) => {
   return (
     <>
@@ -159,15 +160,6 @@ const OccupationNodeComponent = ({
           animationFillMode: "backwards",
         }}
       >
-        {data.imageUrl && (
-          <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-purple-400/50 shadow-lg">
-            <img
-              src={data.imageUrl}
-              alt={data.occupation}
-              className="w-full h-full object-cover"
-            />
-          </div>
-        )}
         <div className="text-4xl font-bold text-transparent bg-clip-text bg-linear-to-r from-purple-200 to-pink-200 tracking-tight text-center">
           {data.occupation}
         </div>
@@ -184,306 +176,25 @@ const nodeTypes: NodeTypes = {
   occupation: OccupationNodeComponent,
 };
 
-// Placeholder API function
-export const fetchSkillTreeData = async (): Promise<SkillTreeData> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 500));
+// API function to fetch skill tree data
+export const fetchSkillTreeData = async (
+  job: string
+): Promise<SkillTreeData> => {
+  const response = await fetch("/api/ai/job", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ job }),
+  });
 
-  return {
-    subjects: ["Math", "Science", "Language", "History", "Art", "PE"],
-    ages: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
-    schools: ["Elementary", "Middle School", "High School"],
-    skills: [
-      // Elementary Math
-      {
-        id: "math-5-1",
-        subject: "Math",
-        age: 5,
-        school: "Elementary",
-        level: 1,
-        completed: true,
-        description: "Basic counting",
-        explanation:
-          "Astronauts need strong foundational math skills to understand complex calculations later. Counting is the basis for all mathematical operations used in space missions and orbital mechanics.",
-      },
-      {
-        id: "math-6-1",
-        subject: "Math",
-        age: 6,
-        school: "Elementary",
-        level: 1,
-        completed: true,
-        description: "Addition",
-        explanation:
-          "Addition helps astronauts combine quantities and understand cumulative effects. This skill is essential for calculating fuel consumption, mission duration, and resource management in space.",
-      },
-      {
-        id: "math-7-1",
-        subject: "Math",
-        age: 7,
-        school: "Elementary",
-        level: 1,
-        completed: true,
-        description: "Subtraction",
-        explanation:
-          "Subtraction teaches astronauts to calculate differences and remaining resources. This is critical for monitoring oxygen levels, fuel reserves, and time remaining in spacewalks.",
-      },
-      {
-        id: "math-8-1",
-        subject: "Math",
-        age: 8,
-        school: "Elementary",
-        level: 2,
-        completed: false,
-        description: "Multiplication",
-        explanation:
-          "Multiplication enables astronauts to scale calculations and understand exponential relationships. It's fundamental for computing velocities, accelerations, and orbital trajectories in space travel.",
-      },
-      {
-        id: "math-9-1",
-        subject: "Math",
-        age: 9,
-        school: "Elementary",
-        level: 2,
-        completed: false,
-        description: "Division",
-        explanation:
-          "Division helps astronauts distribute resources and calculate rates. This skill is crucial for determining fuel efficiency, splitting tasks among crew members, and computing descent speeds during landing.",
-      },
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Failed to fetch skill tree data: ${response.statusText}`);
+  }
 
-      // Elementary Science
-      {
-        id: "science-5-1",
-        subject: "Science",
-        age: 5,
-        school: "Elementary",
-        level: 1,
-        completed: true,
-        description: "Weather",
-        explanation:
-          "Understanding weather patterns introduces astronauts to atmospheric science and environmental systems. This knowledge is essential for predicting space weather, solar storms, and radiation that can affect spacecraft and crew safety.",
-      },
-      {
-        id: "science-6-1",
-        subject: "Science",
-        age: 6,
-        school: "Elementary",
-        level: 1,
-        completed: true,
-        description: "Plants",
-        explanation:
-          "Studying plants teaches astronauts about life support systems and photosynthesis. Growing plants in space is crucial for long-term missions, providing oxygen, food, and psychological benefits to the crew.",
-      },
-      {
-        id: "science-7-1",
-        subject: "Science",
-        age: 7,
-        school: "Elementary",
-        level: 2,
-        completed: false,
-        description: "Animals",
-        explanation:
-          "Learning about animals helps astronauts understand biological systems and adaptation. This knowledge is vital for studying how organisms, including humans, adapt to the extreme conditions of microgravity and space radiation.",
-      },
-      {
-        id: "science-8-1",
-        subject: "Science",
-        age: 8,
-        school: "Elementary",
-        level: 2,
-        completed: false,
-        description: "Solar System",
-        explanation:
-          "Solar system knowledge is fundamental for astronauts to understand celestial mechanics and planetary science. It provides the context for mission planning, navigation, and exploration of other worlds beyond Earth.",
-      },
-
-      // Language Arts
-      {
-        id: "lang-5-1",
-        subject: "Language",
-        age: 5,
-        school: "Elementary",
-        level: 1,
-        completed: true,
-        description: "Alphabet",
-        explanation:
-          "The alphabet is the foundation for all written communication astronauts use daily. Clear communication is critical in space missions where precise instructions can mean the difference between mission success and catastrophic failure.",
-      },
-      {
-        id: "lang-6-1",
-        subject: "Language",
-        age: 6,
-        school: "Elementary",
-        level: 1,
-        completed: true,
-        description: "Reading",
-        explanation:
-          "Reading skills enable astronauts to understand technical manuals, mission procedures, and scientific research. Astronauts must quickly comprehend complex instructions and emergency protocols to ensure crew safety and mission objectives.",
-      },
-      {
-        id: "lang-7-1",
-        subject: "Language",
-        age: 7,
-        school: "Elementary",
-        level: 2,
-        completed: false,
-        description: "Writing",
-        explanation:
-          "Writing allows astronauts to document experiments, log mission activities, and communicate findings. Clear written reports are essential for recording scientific discoveries and sharing results with ground control and the global scientific community.",
-      },
-      {
-        id: "lang-8-1",
-        subject: "Language",
-        age: 8,
-        school: "Elementary",
-        level: 2,
-        completed: false,
-        description: "Grammar",
-        explanation:
-          "Proper grammar ensures astronauts communicate precisely and avoid misunderstandings. In space missions, ambiguous communication can lead to errors in procedures, especially when working with international crews from different language backgrounds.",
-      },
-
-      // Middle School Math
-      {
-        id: "math-11-2",
-        subject: "Math",
-        age: 11,
-        school: "Middle School",
-        level: 3,
-        completed: false,
-        description: "Algebra",
-        explanation:
-          "Algebra teaches astronauts to solve equations and work with variables, essential for calculating orbital mechanics and trajectory adjustments. These skills are directly applied when determining spacecraft positions and velocities during complex space maneuvers.",
-      },
-      {
-        id: "math-12-2",
-        subject: "Math",
-        age: 12,
-        school: "Middle School",
-        level: 3,
-        completed: false,
-        description: "Geometry",
-        explanation:
-          "Geometry helps astronauts understand spatial relationships and three-dimensional thinking crucial for docking procedures. Visualizing angles, distances, and shapes is vital when maneuvering spacecraft in zero-gravity environments and conducting spacewalks.",
-      },
-      {
-        id: "math-13-2",
-        subject: "Math",
-        age: 13,
-        school: "Middle School",
-        level: 4,
-        completed: false,
-        description: "Statistics",
-        explanation:
-          "Statistics enables astronauts to analyze experimental data and assess risks during missions. Understanding probability and data analysis is critical for interpreting scientific results and making informed decisions about mission safety.",
-      },
-
-      // Middle School Science
-      {
-        id: "science-11-2",
-        subject: "Science",
-        age: 11,
-        school: "Middle School",
-        level: 3,
-        completed: false,
-        description: "Biology",
-        explanation:
-          "Biology teaches astronauts about human physiology and how the body functions in extreme environments. This knowledge is essential for understanding the effects of microgravity on muscles, bones, and the cardiovascular system during long-duration space missions.",
-      },
-      {
-        id: "science-12-2",
-        subject: "Science",
-        age: 12,
-        school: "Middle School",
-        level: 3,
-        completed: false,
-        description: "Chemistry",
-        explanation:
-          "Chemistry helps astronauts understand chemical reactions and material properties in space conditions. This is crucial for managing life support systems, propellant chemistry, and conducting experiments in the unique environment of microgravity.",
-      },
-      {
-        id: "science-13-2",
-        subject: "Science",
-        age: 13,
-        school: "Middle School",
-        level: 4,
-        completed: false,
-        description: "Physics",
-        explanation:
-          "Physics is fundamental for astronauts to understand forces, motion, and energy in space. It explains how rockets work, why objects float in orbit, and how to navigate using Newton's laws in the zero-friction environment of space.",
-      },
-
-      // High School Math
-      {
-        id: "math-14-3",
-        subject: "Math",
-        age: 14,
-        school: "High School",
-        level: 4,
-        completed: false,
-        description: "Pre-Calculus",
-        explanation:
-          "Pre-calculus prepares astronauts for advanced mathematical concepts used in orbital mechanics. Understanding functions, trigonometry, and exponential growth is essential for calculating spacecraft trajectories and analyzing mission data.",
-      },
-      {
-        id: "math-15-3",
-        subject: "Math",
-        age: 15,
-        school: "High School",
-        level: 5,
-        completed: false,
-        description: "Calculus",
-        explanation:
-          "Calculus is the mathematical language of space flight, used to compute rates of change and optimize trajectories. Astronauts use differential equations to model rocket acceleration, orbital transfers, and fuel consumption during critical mission phases.",
-      },
-      {
-        id: "math-16-3",
-        subject: "Math",
-        age: 16,
-        school: "High School",
-        level: 5,
-        completed: false,
-        description: "Advanced Math",
-        explanation:
-          "Advanced mathematics including linear algebra and differential equations enables astronauts to understand complex systems. These tools are used in navigation algorithms, control systems, and modeling the behavior of spacecraft under various conditions.",
-      },
-
-      // High School Science
-      {
-        id: "science-14-3",
-        subject: "Science",
-        age: 14,
-        school: "High School",
-        level: 4,
-        completed: false,
-        description: "Advanced Biology",
-        explanation:
-          "Advanced biology deepens understanding of cellular processes and genetics affected by space radiation. Astronauts study how cosmic rays impact DNA and how the immune system adapts to space, crucial for long-term missions to Mars.",
-      },
-      {
-        id: "science-15-3",
-        subject: "Science",
-        age: 15,
-        school: "High School",
-        level: 5,
-        completed: false,
-        description: "Advanced Chemistry",
-        explanation:
-          "Advanced chemistry covers thermodynamics and reaction kinetics essential for rocket propulsion. Understanding combustion, fuel cells, and material science helps astronauts troubleshoot life support systems and develop new technologies for space exploration.",
-      },
-      {
-        id: "science-16-3",
-        subject: "Science",
-        age: 16,
-        school: "High School",
-        level: 5,
-        completed: false,
-        description: "Advanced Physics",
-        explanation:
-          "Advanced physics including relativity and quantum mechanics explains extreme space phenomena. Astronauts use this knowledge to understand time dilation at high speeds, radiation shielding, and the fundamental forces governing the universe.",
-      },
-    ],
-  };
+  const data = await response.json();
+  return data as SkillTreeData;
 };
 
 interface SkillTreeProps {
@@ -497,7 +208,9 @@ export default function SkillTree({ data, onSkillClick }: SkillTreeProps) {
 
   // Convert skill tree data to React Flow nodes and edges
   const { flowNodes, flowEdges } = useMemo(() => {
-    if (!data) return { flowNodes: [], flowEdges: [] };
+    if (!data) {
+      return { flowNodes: [], flowEdges: [] };
+    }
 
     const nodes: Node[] = [];
     const edges: Edge[] = [];
@@ -609,9 +322,7 @@ export default function SkillTree({ data, onSkillClick }: SkillTreeProps) {
         y: occupationY,
       },
       data: {
-        occupation: "Astronaut",
-        imageUrl:
-          "https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=200&h=200&fit=crop",
+        occupation: data.occupation,
       },
       draggable: false,
       selectable: false,
@@ -667,6 +378,12 @@ export default function SkillTree({ data, onSkillClick }: SkillTreeProps) {
     return { flowNodes: nodes, flowEdges: edges };
   }, [data]);
 
+  // Create a stable key based on the data to force ReactFlow to remount when data changes
+  const flowKey = useMemo(() => {
+    if (!data) return "empty";
+    return `${data.skills.length}-${data.subjects.join("-")}`;
+  }, [data]);
+
   // Update nodes and edges when data changes
   React.useEffect(() => {
     setNodes(flowNodes);
@@ -698,6 +415,7 @@ export default function SkillTree({ data, onSkillClick }: SkillTreeProps) {
   return (
     <div className="w-full h-[640px] bg-gray-950 rounded-lg">
       <ReactFlow
+        key={flowKey}
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}

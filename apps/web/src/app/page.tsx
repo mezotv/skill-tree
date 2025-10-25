@@ -17,7 +17,7 @@ export default function Home() {
   useEffect(() => {
     const loadSkillTree = async () => {
       try {
-        const data = await fetchSkillTreeData();
+        const data = await fetchSkillTreeData("Astronaut");
         setSkillTreeData(data);
       } catch (error) {
         console.error("Failed to load skill tree:", error);
@@ -36,10 +36,17 @@ export default function Home() {
   return (
     <div className="w-full">
       <h1 className="text-4xl mb-2">What do you want to be?</h1>
-      <h2 className="text-xl text-gray-600 mb-1">Astronaut Career Path</h2>
-      <p className="text-sm text-gray-500 mb-6">
-        Click on any skill to see why it's important for becoming an astronaut
-      </p>
+      {skillTreeData && (
+        <>
+          <h2 className="text-xl text-gray-600 mb-1">
+            {skillTreeData.occupation} Career Path
+          </h2>
+          <p className="text-sm text-gray-500 mb-6">
+            Click on any skill to see why it's important for becoming a{" "}
+            {skillTreeData.occupation.toLowerCase()}
+          </p>
+        </>
+      )}
 
       <section className="">
         {loading ? (
