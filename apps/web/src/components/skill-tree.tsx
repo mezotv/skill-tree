@@ -57,11 +57,19 @@ const SkillNodeComponent = ({ data }: { data: SkillNode }) => {
     return colors[level - 1] || colors[0];
   };
 
+  // Calculate animation delay based on age
+  const animationDelay = (data.age - 5) * 0.05; // Younger ages appear first
+
   return (
     <>
       <Handle type="target" position={Position.Top} />
       <div
-        className="relative"
+        className="relative animate-in fade-in zoom-in"
+        style={{
+          animationDuration: "0.5s",
+          animationDelay: `${animationDelay}s`,
+          animationFillMode: "backwards",
+        }}
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
       >
@@ -104,7 +112,14 @@ const SchoolLabelComponent = ({ data }: { data: { label: string } }) => {
   return (
     <>
       <Handle type="target" position={Position.Top} style={{ opacity: 0 }} />
-      <div className="text-base font-semibold text-gray-300 select-none text-right w-[120px] tracking-tight">
+      <div
+        className="text-base font-semibold text-gray-300 select-none text-right w-[120px] tracking-tight animate-in fade-in slide-in-from-left"
+        style={{
+          animationDuration: "0.6s",
+          animationDelay: "0s",
+          animationFillMode: "backwards",
+        }}
+      >
         {data.label}
       </div>
       <Handle type="source" position={Position.Bottom} style={{ opacity: 0 }} />
@@ -115,7 +130,14 @@ const SchoolLabelComponent = ({ data }: { data: { label: string } }) => {
 // Custom node component for age labels
 const AgeLabelComponent = ({ data }: { data: { label: string } }) => {
   return (
-    <div className="text-xs text-gray-500 font-medium select-none text-center tracking-wide">
+    <div
+      className="text-xs text-gray-500 font-medium select-none text-center tracking-wide animate-in fade-in"
+      style={{
+        animationDuration: "0.4s",
+        animationDelay: "0s",
+        animationFillMode: "backwards",
+      }}
+    >
       {data.label}
     </div>
   );
@@ -129,7 +151,14 @@ const OccupationNodeComponent = ({
 }) => {
   return (
     <>
-      <div className="flex flex-col items-center gap-4 p-6 bg-linear-to-br from-purple-900/90 to-indigo-900/90 border-2 border-purple-400/70 rounded-2xl shadow-2xl min-w-[300px]">
+      <div
+        className="flex flex-col items-center gap-4 p-6 bg-linear-to-br from-purple-900/90 to-indigo-900/90 border-2 border-purple-400/70 rounded-2xl shadow-2xl min-w-[300px] animate-in fade-in zoom-in"
+        style={{
+          animationDuration: "0.8s",
+          animationDelay: "1s",
+          animationFillMode: "backwards",
+        }}
+      >
         {data.imageUrl && (
           <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-purple-400/50 shadow-lg">
             <img
