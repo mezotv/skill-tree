@@ -21,6 +21,7 @@
     "radix-ui": "^1.4.2",
     "react": "19.2.0",
     "react-dom": "19.2.0",
+    "reactflow": "^11.11.4",
     "react-globe": "^5.0.2",
     "sonner": "^2.0.5",
     "tailwind-merge": "^3.3.1",
