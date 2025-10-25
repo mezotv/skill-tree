@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -10,7 +10,11 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { UserButton } from "@stackframe/stack";
-import SkillTree, { fetchSkillTreeData, type SkillNode, type SkillTreeData } from "@/components/skill-tree"
+import SkillTree, {
+  fetchSkillTreeData,
+  type SkillNode,
+  type SkillTreeData,
+} from "@/components/skill-tree";
 
 const SAMPLE_JOBS = [
   "Software Engineer",
@@ -43,18 +47,17 @@ function isJobsEnvelope(value: unknown): value is JobsEnvelope {
 }
 
 export default function Home() {
-  const [query, setQuery] = useState("")
-  const [suggestions, setSuggestions] = useState<string[]>(SAMPLE_JOBS)
-  const [isLoading, setIsLoading] = useState(false)
-  const [selectedJob, setSelectedJob] = useState<string | null>(null)
-  const nextSectionRef = useRef<HTMLDivElement>(null)
+  const [query, setQuery] = useState("");
+  const [suggestions, setSuggestions] = useState<string[]>(SAMPLE_JOBS);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedJob, setSelectedJob] = useState<string | null>(null);
+  const nextSectionRef = useRef<HTMLDivElement>(null);
 
   const [skillTreeData, setSkillTreeData] = useState<SkillTreeData | null>(
     null
   );
   const [loading, setLoading] = useState(true);
   const [selectedSkill, setSelectedSkill] = useState<SkillNode | null>(null);
-  const [selectedJob, setSelectedJob] = useState<string | null>(null);
 
   useEffect(() => {
     if (selectedJob) {
@@ -255,7 +258,10 @@ export default function Home() {
 
       {/* Next Section Placeholder */}
       {selectedJob && (
-        <section ref={nextSectionRef} className="flex items-center justify-center bg-muted/30">
+        <section
+          ref={nextSectionRef}
+          className="flex items-center justify-center bg-muted/30"
+        >
           {skillTreeData ? (
             <SkillTree
               data={skillTreeData || undefined}
@@ -263,8 +269,12 @@ export default function Home() {
             />
           ) : (
             <div className="text-center space-y-4">
-              <h2 className="text-3xl font-bold">Building your skill tree for {selectedJob}...</h2>
-              <p className="text-muted-foreground">This is where the interactive skill tree will appear</p>
+              <h2 className="text-3xl font-bold">
+                Building your skill tree for {selectedJob}...
+              </h2>
+              <p className="text-muted-foreground">
+                This is where the interactive skill tree will appear
+              </p>
             </div>
           )}
         </section>
