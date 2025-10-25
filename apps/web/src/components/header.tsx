@@ -1,8 +1,11 @@
 "use client";
 import Link from "next/link";
 import { ModeToggle } from "./mode-toggle";
+import { UserButton, useUser } from "@stackframe/stack";
 
 export default function Header() {
+  const user = useUser();
+
   const links = [
     { to: "/", label: "Home" },
     { to: "/globe", label: "Globe" },
@@ -21,6 +24,24 @@ export default function Header() {
           })}
         </nav>
         <div className="flex items-center gap-2">
+          {user ? (
+            <UserButton />
+          ) : (
+            <div className="flex gap-2">
+              <Link
+                href="/sign-in"
+                className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/sign-up"
+                className="px-3 py-1 text-sm bg-blue-600 text-white hover:bg-blue-700 rounded-md transition-colors"
+              >
+                Sign Up
+              </Link>
+            </div>
+          )}
           <ModeToggle />
         </div>
       </div>
