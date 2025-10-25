@@ -67,14 +67,13 @@ const SkillNodeComponent = ({ data }: { data: SkillNode }) => {
       >
         <div
           className={`
-            px-3 py-2 rounded-lg border-2 min-w-[120px] text-center text-sm font-medium
+            px-4 py-2 rounded-lg border-2 min-w-[160px] text-center text-sm font-medium
             ${getLevelColor(data.level)}
             ${data.completed ? "ring-2 ring-green-500" : "hover:shadow-md"}
             transition-all duration-200 cursor-pointer
           `}
         >
-          <div className="font-semibold text-gray-800">{data.subject}</div>
-          <div className="text-xs text-gray-500">Age {data.age}</div>
+          <div className="font-semibold text-gray-800">{data.description}</div>
         </div>
 
         {showTooltip && data.explanation && (
@@ -95,7 +94,7 @@ const SchoolLabelComponent = ({ data }: { data: { label: string } }) => {
   return (
     <>
       <Handle type="target" position={Position.Top} style={{ opacity: 0 }} />
-      <div className="text-lg font-bold text-gray-700 select-none">
+      <div className="text-lg font-bold text-gray-700 select-none text-right w-[120px]">
         {data.label}
       </div>
       <Handle type="source" position={Position.Bottom} style={{ opacity: 0 }} />
@@ -106,7 +105,9 @@ const SchoolLabelComponent = ({ data }: { data: { label: string } }) => {
 // Custom node component for age labels
 const AgeLabelComponent = ({ data }: { data: { label: string } }) => {
   return (
-    <div className="text-xs text-gray-500 italic select-none">{data.label}</div>
+    <div className="text-xs text-gray-500 italic select-none text-center">
+      {data.label}
+    </div>
   );
 };
 
@@ -434,15 +435,8 @@ export default function SkillTree({ data, onSkillClick }: SkillTreeProps) {
     const nodes: Node[] = [];
     const edges: Edge[] = [];
 
-    // Create school nodes with their positions
-    const schoolNodes: Array<{
-      id: string;
-      school: string;
-      minAge: number;
-      maxAge: number;
-      position: { x: number; y: number };
-    }> = [];
-
+    // Add school label nodes
+    const schoolNodes: Array<{ id: string; y: number }> = [];
     data.schools.forEach((school, schoolIndex) => {
       const schoolSkills = data.skills.filter(
         (skill) => skill.school === school
@@ -451,66 +445,68 @@ export default function SkillTree({ data, onSkillClick }: SkillTreeProps) {
         const minAge = Math.min(...schoolSkills.map((s) => s.age));
         const maxAge = Math.max(...schoolSkills.map((s) => s.age));
         const avgAge = (minAge + maxAge) / 2;
+        const yPos = (18 - avgAge) * 80;
 
-        schoolNodes.push({
+        nodes.push({
           id: `school-${schoolIndex}`,
-          school,
-          minAge,
-          maxAge,
+          type: "schoolLabel",
           position: {
-            x: -150, // Far left - fixed position for alignment
-            y: (18 - avgAge) * 80, // Inverted: higher ages at top
+            x: -300, // Far left - before age timeline
+            y: yPos, // Inverted: higher ages at top
           },
+          data: {
+            label: school,
+          },
+          draggable: false,
+          selectable: false,
         });
+
+        schoolNodes.push({ id: `school-${schoolIndex}`, y: yPos });
       }
     });
 
-    // Sort school nodes by position (top to bottom)
-    schoolNodes.sort((a, b) => a.position.y - b.position.y);
+    // Sort school nodes by y position and connect them with timeline
+    schoolNodes.sort((a, b) => a.y - b.y);
+    for (let i = 0; i < schoolNodes.length - 1; i++) {
+      edges.push({
+        id: `school-timeline-${i}`,
+        source: schoolNodes[i].id,
+        target: schoolNodes[i + 1].id,
+        type: "straight" as const,
+        style: {
+          stroke: "#6b7280",
+          strokeWidth: 4,
+        },
+        animated: false,
+      });
+    }
 
-    // Add school nodes to the flow
-    schoolNodes.forEach((schoolNode) => {
+    // Create age nodes for timeline
+    const sortedAges = [...data.ages].sort((a, b) => b - a); // Sort descending (highest age at top)
+
+    // Add age nodes to the timeline
+    sortedAges.forEach((age, index) => {
       nodes.push({
-        id: schoolNode.id,
-        type: "schoolLabel",
-        position: schoolNode.position,
+        id: `age-${age}`,
+        type: "ageLabel",
+        position: {
+          x: -150, // Between school labels and skill nodes
+          y: (18 - age) * 80, // Inverted: higher ages at top
+        },
         data: {
-          label: schoolNode.school,
+          label: `Age ${age}`,
         },
         draggable: false,
         selectable: false,
       });
     });
 
-    // Add age label nodes between schools
-    for (let i = 0; i < schoolNodes.length - 1; i++) {
-      const currentSchool = schoolNodes[i];
-      const nextSchool = schoolNodes[i + 1];
-
-      // Position age label in the middle between two schools
-      const midY = (currentSchool.position.y + nextSchool.position.y) / 2;
-
-      nodes.push({
-        id: `age-label-${i}`,
-        type: "ageLabel",
-        position: {
-          x: -150, // Same x as school labels for alignment
-          y: midY,
-        },
-        data: {
-          label: `Ages ${nextSchool.minAge}-${nextSchool.maxAge}`,
-        },
-        draggable: false,
-        selectable: false,
-      });
-    }
-
-    // Add vertical edges between school labels (top to bottom)
-    for (let i = 0; i < schoolNodes.length - 1; i++) {
-      const edge = {
-        id: `school-timeline-${i}`,
-        source: schoolNodes[i].id,
-        target: schoolNodes[i + 1].id,
+    // Add vertical edges between age nodes (connecting the timeline)
+    for (let i = 0; i < sortedAges.length - 1; i++) {
+      edges.push({
+        id: `age-timeline-${i}`,
+        source: `age-${sortedAges[i]}`,
+        target: `age-${sortedAges[i + 1]}`,
         type: "straight" as const,
         style: {
           stroke: "#6b7280",
@@ -518,8 +514,7 @@ export default function SkillTree({ data, onSkillClick }: SkillTreeProps) {
           strokeDasharray: "8,4",
         },
         animated: false,
-      };
-      edges.push(edge);
+      });
     }
 
     // Add skill nodes
