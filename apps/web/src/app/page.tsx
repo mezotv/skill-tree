@@ -2,12 +2,13 @@
 
 import type React from "react"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { ArrowRight, Loader2 } from "lucide-react"
+import SkillTree, { fetchSkillTreeData, type SkillNode, type SkillTreeData } from "@/components/skill-tree"
 
 const SAMPLE_JOBS = ["Software Engineer", "Data Scientist", "Product Manager", "UX Designer", "Marketing Manager"]
 
@@ -37,8 +38,34 @@ export default function Home() {
   const [query, setQuery] = useState("")
   const [suggestions, setSuggestions] = useState<string[]>(SAMPLE_JOBS)
   const [isLoading, setIsLoading] = useState(false)
-  const [selectedJob, setSelectedJob] = useState<string | null>(null)
   const nextSectionRef = useRef<HTMLDivElement>(null)
+
+  const [skillTreeData, setSkillTreeData] = useState<SkillTreeData | null>(
+    null
+  );
+  const [loading, setLoading] = useState(true);
+  const [selectedSkill, setSelectedSkill] = useState<SkillNode | null>(null);
+  const [selectedJob, setSelectedJob] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (selectedJob) {
+      const loadSkillTree = async () => {
+        try {
+          const data = await fetchSkillTreeData(selectedJob);
+          setSkillTreeData(data);
+        } catch (error) {
+          console.error("Failed to load skill tree:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      loadSkillTree();
+    }
+  }, [selectedJob]);
+
+  const handleSkillClick = (skill: SkillNode) => {
+    setSelectedSkill(skill);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -204,11 +231,18 @@ export default function Home() {
 
       {/* Next Section Placeholder */}
       {selectedJob && (
-        <section ref={nextSectionRef} className="min-h-screen flex items-center justify-center px-6 py-20 bg-muted/30">
-          <div className="text-center space-y-4">
-            <h2 className="text-3xl font-bold">Building your skill tree for {selectedJob}...</h2>
-            <p className="text-muted-foreground">This is where the interactive skill tree will appear</p>
-          </div>
+        <section ref={nextSectionRef} className="flex items-center justify-center bg-muted/30">
+          {skillTreeData ? (
+            <SkillTree
+              data={skillTreeData || undefined}
+              onSkillClick={handleSkillClick}
+            />
+          ) : (
+            <div className="text-center space-y-4">
+              <h2 className="text-3xl font-bold">Building your skill tree for {selectedJob}...</h2>
+              <p className="text-muted-foreground">This is where the interactive skill tree will appear</p>
+            </div>
+          )}
         </section>
       )}
 
