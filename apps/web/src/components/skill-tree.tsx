@@ -483,7 +483,7 @@ export default function SkillTree({ data, onSkillClick }: SkillTreeProps) {
           id: `${current.id}-${next.id}`,
           source: current.id,
           target: next.id,
-          type: "smoothstep",
+          type: "straight",
           animated: current.completed,
           style: {
             stroke: current.completed ? "#10b981" : "#6b7280",
@@ -525,7 +525,7 @@ export default function SkillTree({ data, onSkillClick }: SkillTreeProps) {
   }
 
   return (
-    <div className="w-full h-[600px] border rounded-lg">
+    <div className="w-full h-[640px]">
       <ReactFlow
         nodes={nodes}
         edges={edges}
