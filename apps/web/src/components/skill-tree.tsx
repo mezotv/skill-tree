@@ -48,11 +48,11 @@ const SkillNodeComponent = ({ data }: { data: SkillNode }) => {
 
   const getLevelColor = (level: number) => {
     const colors = [
-      "bg-green-100 border-green-300", // Level 1
-      "bg-blue-100 border-blue-300", // Level 2
-      "bg-yellow-100 border-yellow-300", // Level 3
-      "bg-orange-100 border-orange-300", // Level 4
-      "bg-red-100 border-red-300", // Level 5
+      "bg-gray-900/95 border-emerald-400/70", // Level 1
+      "bg-gray-900/95 border-blue-400/70", // Level 2
+      "bg-gray-900/95 border-amber-400/70", // Level 3
+      "bg-gray-900/95 border-orange-400/70", // Level 4
+      "bg-gray-900/95 border-rose-400/70", // Level 5
     ];
     return colors[level - 1] || colors[0];
   };
@@ -67,20 +67,30 @@ const SkillNodeComponent = ({ data }: { data: SkillNode }) => {
       >
         <div
           className={`
-            px-4 py-2 rounded-lg border-2 min-w-[160px] text-center text-sm font-medium
+            px-5 py-3 rounded-lg border-2 min-w-[160px] text-center
             ${getLevelColor(data.level)}
-            ${data.completed ? "ring-2 ring-green-500" : "hover:shadow-md"}
-            transition-all duration-200 cursor-pointer
+            ${
+              data.completed
+                ? "ring-1 ring-emerald-400 ring-offset-2 ring-offset-gray-950"
+                : "hover:shadow-xl hover:-translate-y-0.5"
+            }
+            transition-all duration-200 cursor-pointer shadow-lg
           `}
         >
-          <div className="font-semibold text-gray-800">{data.description}</div>
+          <div className="font-medium text-gray-100 text-sm leading-snug">
+            {data.description}
+          </div>
         </div>
 
         {showTooltip && data.explanation && (
-          <div className="absolute z-50 w-64 p-3 mt-2 text-xs text-white bg-gray-900 rounded-lg shadow-lg left-1/2 transform -translate-x-1/2 pointer-events-none">
-            <div className="font-semibold mb-1">{data.description}</div>
-            <div className="text-gray-300">{data.explanation}</div>
-            <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45"></div>
+          <div className="absolute z-50 w-72 p-4 mt-2 text-xs bg-gray-900 border border-gray-700 rounded-xl shadow-xl left-1/2 transform -translate-x-1/2 pointer-events-none">
+            <div className="font-semibold text-gray-100 mb-2">
+              {data.description}
+            </div>
+            <div className="text-gray-300 leading-relaxed">
+              {data.explanation}
+            </div>
+            <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gray-900 border-l border-t border-gray-700 rotate-45"></div>
           </div>
         )}
       </div>
@@ -94,7 +104,7 @@ const SchoolLabelComponent = ({ data }: { data: { label: string } }) => {
   return (
     <>
       <Handle type="target" position={Position.Top} style={{ opacity: 0 }} />
-      <div className="text-lg font-bold text-gray-700 select-none text-right w-[120px]">
+      <div className="text-base font-semibold text-gray-300 select-none text-right w-[120px] tracking-tight">
         {data.label}
       </div>
       <Handle type="source" position={Position.Bottom} style={{ opacity: 0 }} />
@@ -105,7 +115,7 @@ const SchoolLabelComponent = ({ data }: { data: { label: string } }) => {
 // Custom node component for age labels
 const AgeLabelComponent = ({ data }: { data: { label: string } }) => {
   return (
-    <div className="text-xs text-gray-500 italic select-none text-center">
+    <div className="text-xs text-gray-500 font-medium select-none text-center tracking-wide">
       {data.label}
     </div>
   );
@@ -474,8 +484,8 @@ export default function SkillTree({ data, onSkillClick }: SkillTreeProps) {
         target: schoolNodes[i + 1].id,
         type: "straight" as const,
         style: {
-          stroke: "#6b7280",
-          strokeWidth: 4,
+          stroke: "#374151",
+          strokeWidth: 3,
         },
         animated: false,
       });
@@ -509,9 +519,8 @@ export default function SkillTree({ data, onSkillClick }: SkillTreeProps) {
         target: `age-${sortedAges[i + 1]}`,
         type: "straight" as const,
         style: {
-          stroke: "#6b7280",
-          strokeWidth: 3,
-          strokeDasharray: "8,4",
+          stroke: "#4b5563",
+          strokeWidth: 2,
         },
         animated: false,
       });
@@ -546,10 +555,10 @@ export default function SkillTree({ data, onSkillClick }: SkillTreeProps) {
           source: next.id,
           target: current.id,
           type: "straight",
-          animated: current.completed,
+          animated: false,
           style: {
-            stroke: current.completed ? "#10b981" : "#6b7280",
-            strokeWidth: 2,
+            stroke: current.completed ? "#34d399" : "#4b5563",
+            strokeWidth: 1.5,
           },
         });
       }
@@ -587,7 +596,7 @@ export default function SkillTree({ data, onSkillClick }: SkillTreeProps) {
   }
 
   return (
-    <div className="w-full h-[640px]">
+    <div className="w-full h-[640px] bg-gray-950 rounded-lg">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -600,7 +609,7 @@ export default function SkillTree({ data, onSkillClick }: SkillTreeProps) {
         attributionPosition="bottom-left"
       >
         <Controls />
-        <Background variant={BackgroundVariant.Dots} />
+        <Background variant={BackgroundVariant.Dots} color="#374151" gap={16} />
       </ReactFlow>
     </div>
   );
