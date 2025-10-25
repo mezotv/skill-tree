@@ -548,8 +548,8 @@ export default function SkillTree({ data, onSkillClick }: SkillTreeProps) {
         // Connect consecutive skills in the same subject
         edges.push({
           id: `${current.id}-${next.id}`,
-          source: current.id,
-          target: next.id,
+          source: next.id,
+          target: current.id,
           type: "straight",
           animated: current.completed,
           style: {
