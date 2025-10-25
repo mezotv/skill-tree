@@ -32,6 +32,7 @@ export interface SkillNode {
   completed: boolean;
   prerequisites?: string[];
   description?: string;
+  explanation?: string; // Explanation of relevancy for the occupation
 }
 
 export interface SkillTreeData {
@@ -43,6 +44,8 @@ export interface SkillTreeData {
 
 // Custom node component for skills
 const SkillNodeComponent = ({ data }: { data: SkillNode }) => {
+  const [showTooltip, setShowTooltip] = React.useState(false);
+
   const getLevelColor = (level: number) => {
     const colors = [
       "bg-green-100 border-green-300", // Level 1
@@ -58,15 +61,29 @@ const SkillNodeComponent = ({ data }: { data: SkillNode }) => {
     <>
       <Handle type="target" position={Position.Top} />
       <div
-        className={`
-          px-3 py-2 rounded-lg border-2 min-w-[120px] text-center text-sm font-medium
-          ${getLevelColor(data.level)}
-          ${data.completed ? "ring-2 ring-green-500" : "hover:shadow-md"}
-          transition-all duration-200
-        `}
+        className="relative"
+        onMouseEnter={() => setShowTooltip(true)}
+        onMouseLeave={() => setShowTooltip(false)}
       >
-        <div className="font-semibold text-gray-800">{data.subject}</div>
-        <div className="text-xs text-gray-500">Age {data.age}</div>
+        <div
+          className={`
+            px-3 py-2 rounded-lg border-2 min-w-[120px] text-center text-sm font-medium
+            ${getLevelColor(data.level)}
+            ${data.completed ? "ring-2 ring-green-500" : "hover:shadow-md"}
+            transition-all duration-200 cursor-pointer
+          `}
+        >
+          <div className="font-semibold text-gray-800">{data.subject}</div>
+          <div className="text-xs text-gray-500">Age {data.age}</div>
+        </div>
+
+        {showTooltip && data.explanation && (
+          <div className="absolute z-50 w-64 p-3 mt-2 text-xs text-white bg-gray-900 rounded-lg shadow-lg left-1/2 transform -translate-x-1/2 pointer-events-none">
+            <div className="font-semibold mb-1">{data.description}</div>
+            <div className="text-gray-300">{data.explanation}</div>
+            <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45"></div>
+          </div>
+        )}
       </div>
       <Handle type="source" position={Position.Bottom} />
     </>
@@ -118,6 +135,8 @@ export const fetchSkillTreeData = async (): Promise<SkillTreeData> => {
         level: 1,
         completed: true,
         description: "Basic counting",
+        explanation:
+          "Astronauts need strong foundational math skills to understand complex calculations later. Counting is the basis for all mathematical operations used in space missions and orbital mechanics.",
       },
       {
         id: "math-6-1",
@@ -127,6 +146,8 @@ export const fetchSkillTreeData = async (): Promise<SkillTreeData> => {
         level: 1,
         completed: true,
         description: "Addition",
+        explanation:
+          "Addition helps astronauts combine quantities and understand cumulative effects. This skill is essential for calculating fuel consumption, mission duration, and resource management in space.",
       },
       {
         id: "math-7-1",
@@ -136,6 +157,8 @@ export const fetchSkillTreeData = async (): Promise<SkillTreeData> => {
         level: 1,
         completed: true,
         description: "Subtraction",
+        explanation:
+          "Subtraction teaches astronauts to calculate differences and remaining resources. This is critical for monitoring oxygen levels, fuel reserves, and time remaining in spacewalks.",
       },
       {
         id: "math-8-1",
@@ -145,6 +168,8 @@ export const fetchSkillTreeData = async (): Promise<SkillTreeData> => {
         level: 2,
         completed: false,
         description: "Multiplication",
+        explanation:
+          "Multiplication enables astronauts to scale calculations and understand exponential relationships. It's fundamental for computing velocities, accelerations, and orbital trajectories in space travel.",
       },
       {
         id: "math-9-1",
@@ -154,6 +179,8 @@ export const fetchSkillTreeData = async (): Promise<SkillTreeData> => {
         level: 2,
         completed: false,
         description: "Division",
+        explanation:
+          "Division helps astronauts distribute resources and calculate rates. This skill is crucial for determining fuel efficiency, splitting tasks among crew members, and computing descent speeds during landing.",
       },
 
       // Elementary Science
@@ -165,6 +192,8 @@ export const fetchSkillTreeData = async (): Promise<SkillTreeData> => {
         level: 1,
         completed: true,
         description: "Weather",
+        explanation:
+          "Understanding weather patterns introduces astronauts to atmospheric science and environmental systems. This knowledge is essential for predicting space weather, solar storms, and radiation that can affect spacecraft and crew safety.",
       },
       {
         id: "science-6-1",
@@ -174,6 +203,8 @@ export const fetchSkillTreeData = async (): Promise<SkillTreeData> => {
         level: 1,
         completed: true,
         description: "Plants",
+        explanation:
+          "Studying plants teaches astronauts about life support systems and photosynthesis. Growing plants in space is crucial for long-term missions, providing oxygen, food, and psychological benefits to the crew.",
       },
       {
         id: "science-7-1",
@@ -183,6 +214,8 @@ export const fetchSkillTreeData = async (): Promise<SkillTreeData> => {
         level: 2,
         completed: false,
         description: "Animals",
+        explanation:
+          "Learning about animals helps astronauts understand biological systems and adaptation. This knowledge is vital for studying how organisms, including humans, adapt to the extreme conditions of microgravity and space radiation.",
       },
       {
         id: "science-8-1",
@@ -192,6 +225,8 @@ export const fetchSkillTreeData = async (): Promise<SkillTreeData> => {
         level: 2,
         completed: false,
         description: "Solar System",
+        explanation:
+          "Solar system knowledge is fundamental for astronauts to understand celestial mechanics and planetary science. It provides the context for mission planning, navigation, and exploration of other worlds beyond Earth.",
       },
 
       // Language Arts
@@ -203,6 +238,8 @@ export const fetchSkillTreeData = async (): Promise<SkillTreeData> => {
         level: 1,
         completed: true,
         description: "Alphabet",
+        explanation:
+          "The alphabet is the foundation for all written communication astronauts use daily. Clear communication is critical in space missions where precise instructions can mean the difference between mission success and catastrophic failure.",
       },
       {
         id: "lang-6-1",
@@ -212,6 +249,8 @@ export const fetchSkillTreeData = async (): Promise<SkillTreeData> => {
         level: 1,
         completed: true,
         description: "Reading",
+        explanation:
+          "Reading skills enable astronauts to understand technical manuals, mission procedures, and scientific research. Astronauts must quickly comprehend complex instructions and emergency protocols to ensure crew safety and mission objectives.",
       },
       {
         id: "lang-7-1",
@@ -221,6 +260,8 @@ export const fetchSkillTreeData = async (): Promise<SkillTreeData> => {
         level: 2,
         completed: false,
         description: "Writing",
+        explanation:
+          "Writing allows astronauts to document experiments, log mission activities, and communicate findings. Clear written reports are essential for recording scientific discoveries and sharing results with ground control and the global scientific community.",
       },
       {
         id: "lang-8-1",
@@ -230,6 +271,8 @@ export const fetchSkillTreeData = async (): Promise<SkillTreeData> => {
         level: 2,
         completed: false,
         description: "Grammar",
+        explanation:
+          "Proper grammar ensures astronauts communicate precisely and avoid misunderstandings. In space missions, ambiguous communication can lead to errors in procedures, especially when working with international crews from different language backgrounds.",
       },
 
       // Middle School Math
@@ -241,6 +284,8 @@ export const fetchSkillTreeData = async (): Promise<SkillTreeData> => {
         level: 3,
         completed: false,
         description: "Algebra",
+        explanation:
+          "Algebra teaches astronauts to solve equations and work with variables, essential for calculating orbital mechanics and trajectory adjustments. These skills are directly applied when determining spacecraft positions and velocities during complex space maneuvers.",
       },
       {
         id: "math-12-2",
@@ -250,6 +295,8 @@ export const fetchSkillTreeData = async (): Promise<SkillTreeData> => {
         level: 3,
         completed: false,
         description: "Geometry",
+        explanation:
+          "Geometry helps astronauts understand spatial relationships and three-dimensional thinking crucial for docking procedures. Visualizing angles, distances, and shapes is vital when maneuvering spacecraft in zero-gravity environments and conducting spacewalks.",
       },
       {
         id: "math-13-2",
@@ -259,6 +306,8 @@ export const fetchSkillTreeData = async (): Promise<SkillTreeData> => {
         level: 4,
         completed: false,
         description: "Statistics",
+        explanation:
+          "Statistics enables astronauts to analyze experimental data and assess risks during missions. Understanding probability and data analysis is critical for interpreting scientific results and making informed decisions about mission safety.",
       },
 
       // Middle School Science
@@ -270,6 +319,8 @@ export const fetchSkillTreeData = async (): Promise<SkillTreeData> => {
         level: 3,
         completed: false,
         description: "Biology",
+        explanation:
+          "Biology teaches astronauts about human physiology and how the body functions in extreme environments. This knowledge is essential for understanding the effects of microgravity on muscles, bones, and the cardiovascular system during long-duration space missions.",
       },
       {
         id: "science-12-2",
@@ -279,6 +330,8 @@ export const fetchSkillTreeData = async (): Promise<SkillTreeData> => {
         level: 3,
         completed: false,
         description: "Chemistry",
+        explanation:
+          "Chemistry helps astronauts understand chemical reactions and material properties in space conditions. This is crucial for managing life support systems, propellant chemistry, and conducting experiments in the unique environment of microgravity.",
       },
       {
         id: "science-13-2",
@@ -288,6 +341,8 @@ export const fetchSkillTreeData = async (): Promise<SkillTreeData> => {
         level: 4,
         completed: false,
         description: "Physics",
+        explanation:
+          "Physics is fundamental for astronauts to understand forces, motion, and energy in space. It explains how rockets work, why objects float in orbit, and how to navigate using Newton's laws in the zero-friction environment of space.",
       },
 
       // High School Math
@@ -299,6 +354,8 @@ export const fetchSkillTreeData = async (): Promise<SkillTreeData> => {
         level: 4,
         completed: false,
         description: "Pre-Calculus",
+        explanation:
+          "Pre-calculus prepares astronauts for advanced mathematical concepts used in orbital mechanics. Understanding functions, trigonometry, and exponential growth is essential for calculating spacecraft trajectories and analyzing mission data.",
       },
       {
         id: "math-15-3",
@@ -308,6 +365,8 @@ export const fetchSkillTreeData = async (): Promise<SkillTreeData> => {
         level: 5,
         completed: false,
         description: "Calculus",
+        explanation:
+          "Calculus is the mathematical language of space flight, used to compute rates of change and optimize trajectories. Astronauts use differential equations to model rocket acceleration, orbital transfers, and fuel consumption during critical mission phases.",
       },
       {
         id: "math-16-3",
@@ -317,6 +376,8 @@ export const fetchSkillTreeData = async (): Promise<SkillTreeData> => {
         level: 5,
         completed: false,
         description: "Advanced Math",
+        explanation:
+          "Advanced mathematics including linear algebra and differential equations enables astronauts to understand complex systems. These tools are used in navigation algorithms, control systems, and modeling the behavior of spacecraft under various conditions.",
       },
 
       // High School Science
@@ -328,6 +389,8 @@ export const fetchSkillTreeData = async (): Promise<SkillTreeData> => {
         level: 4,
         completed: false,
         description: "Advanced Biology",
+        explanation:
+          "Advanced biology deepens understanding of cellular processes and genetics affected by space radiation. Astronauts study how cosmic rays impact DNA and how the immune system adapts to space, crucial for long-term missions to Mars.",
       },
       {
         id: "science-15-3",
@@ -337,6 +400,8 @@ export const fetchSkillTreeData = async (): Promise<SkillTreeData> => {
         level: 5,
         completed: false,
         description: "Advanced Chemistry",
+        explanation:
+          "Advanced chemistry covers thermodynamics and reaction kinetics essential for rocket propulsion. Understanding combustion, fuel cells, and material science helps astronauts troubleshoot life support systems and develop new technologies for space exploration.",
       },
       {
         id: "science-16-3",
@@ -346,6 +411,8 @@ export const fetchSkillTreeData = async (): Promise<SkillTreeData> => {
         level: 5,
         completed: false,
         description: "Advanced Physics",
+        explanation:
+          "Advanced physics including relativity and quantum mechanics explains extreme space phenomena. Astronauts use this knowledge to understand time dilation at high speeds, radiation shielding, and the fundamental forces governing the universe.",
       },
     ],
   };

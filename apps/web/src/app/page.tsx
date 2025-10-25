@@ -35,10 +35,11 @@ export default function Home() {
 
   return (
     <div className="w-full">
-      <h1 className="text-4xl">What do you want to be?</h1>
-      <h2 className="text-xl text-gray-600 mb-6">
-        (or what are your interests)
-      </h2>
+      <h1 className="text-4xl mb-2">What do you want to be?</h1>
+      <h2 className="text-xl text-gray-600 mb-1">Astronaut Career Path</h2>
+      <p className="text-sm text-gray-500 mb-6">
+        Click on any skill to see why it's important for becoming an astronaut
+      </p>
 
       <section className="">
         {loading ? (
@@ -52,6 +53,39 @@ export default function Home() {
           />
         )}
       </section>
+
+      {selectedSkill && (
+        <section className="mt-6 rounded-lg border p-6 bg-linear-to-br from-blue-50 to-indigo-50">
+          <div className="flex items-start justify-between mb-3">
+            <div>
+              <h3 className="text-2xl font-bold text-gray-800">
+                {selectedSkill.subject}
+              </h3>
+              <p className="text-sm text-gray-600">
+                {selectedSkill.description} • Age {selectedSkill.age} •{" "}
+                {selectedSkill.school}
+              </p>
+            </div>
+            <span
+              className={`px-3 py-1 rounded-full text-xs font-medium ${
+                selectedSkill.completed
+                  ? "bg-green-100 text-green-800"
+                  : "bg-gray-100 text-gray-800"
+              }`}
+            >
+              {selectedSkill.completed ? "Completed" : "Not Started"}
+            </span>
+          </div>
+          <div className="border-t pt-3 mt-3">
+            <h4 className="font-semibold text-gray-700 mb-2">
+              Why this matters for astronauts:
+            </h4>
+            <p className="text-gray-700 leading-relaxed">
+              {selectedSkill.explanation}
+            </p>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
