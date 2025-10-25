@@ -121,10 +121,38 @@ const AgeLabelComponent = ({ data }: { data: { label: string } }) => {
   );
 };
 
+// Custom node component for occupation (master node)
+const OccupationNodeComponent = ({
+  data,
+}: {
+  data: { occupation: string; imageUrl?: string };
+}) => {
+  return (
+    <>
+      <div className="flex flex-col items-center gap-4 p-6 bg-linear-to-br from-purple-900/90 to-indigo-900/90 border-2 border-purple-400/70 rounded-2xl shadow-2xl min-w-[300px]">
+        {data.imageUrl && (
+          <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-purple-400/50 shadow-lg">
+            <img
+              src={data.imageUrl}
+              alt={data.occupation}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
+        <div className="text-4xl font-bold text-transparent bg-clip-text bg-linear-to-r from-purple-200 to-pink-200 tracking-tight text-center">
+          {data.occupation}
+        </div>
+      </div>
+      <Handle type="source" position={Position.Bottom} />
+    </>
+  );
+};
+
 const nodeTypes: NodeTypes = {
   skill: SkillNodeComponent,
   schoolLabel: SchoolLabelComponent,
   ageLabel: AgeLabelComponent,
+  occupation: OccupationNodeComponent,
 };
 
 // Placeholder API function
@@ -537,6 +565,49 @@ export default function SkillTree({ data, onSkillClick }: SkillTreeProps) {
         },
         data: skill,
       });
+    });
+
+    // Add occupation node at the top
+    const maxAge = Math.max(...data.ages);
+    const occupationY = (18 - maxAge) * 80 - 200; // Position above the highest age
+    const centerX = ((data.subjects.length - 1) * 200) / 2; // Center of all subjects
+
+    nodes.push({
+      id: "occupation-master",
+      type: "occupation",
+      position: {
+        x: centerX, // Center horizontally
+        y: occupationY,
+      },
+      data: {
+        occupation: "Astronaut",
+        imageUrl:
+          "https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=200&h=200&fit=crop",
+      },
+      draggable: false,
+      selectable: false,
+    });
+
+    // Connect occupation node to the highest age node in each subject
+    data.subjects.forEach((subject) => {
+      const subjectSkills = data.skills
+        .filter((skill) => skill.subject === subject)
+        .sort((a, b) => b.age - a.age); // Sort descending to get highest age first
+
+      if (subjectSkills.length > 0) {
+        const topSkill = subjectSkills[0];
+        edges.push({
+          id: `occupation-${topSkill.id}`,
+          source: "occupation-master",
+          target: topSkill.id,
+          type: "default",
+          animated: false,
+          style: {
+            stroke: "#a78bfa",
+            strokeWidth: 2,
+          },
+        });
+      }
     });
 
     // Create edges between consecutive ages for the same subject
