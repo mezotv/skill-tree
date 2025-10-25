@@ -1,3 +1,5 @@
+import { getCityImageUrl } from "../lib/cityImageApi";
+
 export interface Hotspot {
   city: string;
   country: string;
@@ -8,6 +10,7 @@ export interface Hotspot {
   jobAvailability: "Low" | "Medium" | "High";
   costOfLiving: "Low" | "Medium" | "High";
   visaRequirements: string;
+  imageUrl?: string; // City image URL from Unsplash
 }
 
 export interface Career {
@@ -30,6 +33,7 @@ export const careers: Career[] = [
         jobAvailability: "High",
         costOfLiving: "High",
         visaRequirements: "H1B Visa",
+        imageUrl: getCityImageUrl("San Francisco"),
       },
       {
         city: "New York City",
@@ -42,6 +46,7 @@ export const careers: Career[] = [
         jobAvailability: "High",
         costOfLiving: "High",
         visaRequirements: "H1B Visa",
+        imageUrl: getCityImageUrl("New York City"),
       },
       {
         city: "Seattle",
@@ -54,6 +59,7 @@ export const careers: Career[] = [
         jobAvailability: "High",
         costOfLiving: "High",
         visaRequirements: "H1B Visa",
+        imageUrl: getCityImageUrl("Seattle"),
       },
       {
         city: "Toronto",
@@ -66,6 +72,7 @@ export const careers: Career[] = [
         jobAvailability: "Medium",
         costOfLiving: "Medium",
         visaRequirements: "Work Permit",
+        imageUrl: getCityImageUrl("Toronto"),
       },
       {
         city: "London",
@@ -78,6 +85,7 @@ export const careers: Career[] = [
         jobAvailability: "Medium",
         costOfLiving: "High",
         visaRequirements: "Skilled Worker Visa",
+        imageUrl: getCityImageUrl("London"),
       },
     ],
   },
@@ -95,6 +103,7 @@ export const careers: Career[] = [
         jobAvailability: "High",
         costOfLiving: "High",
         visaRequirements: "H1B Visa",
+        imageUrl: getCityImageUrl("San Francisco"),
       },
       {
         city: "Boston",
@@ -107,6 +116,7 @@ export const careers: Career[] = [
         jobAvailability: "High",
         costOfLiving: "High",
         visaRequirements: "H1B Visa",
+        imageUrl: getCityImageUrl("Boston"),
       },
       {
         city: "Singapore",
@@ -119,6 +129,7 @@ export const careers: Career[] = [
         jobAvailability: "Medium",
         costOfLiving: "High",
         visaRequirements: "Employment Pass",
+        imageUrl: getCityImageUrl("Singapore"),
       },
     ],
   },
@@ -136,6 +147,7 @@ export const careers: Career[] = [
         jobAvailability: "High",
         costOfLiving: "High",
         visaRequirements: "H1B Visa",
+        imageUrl: getCityImageUrl("New York City"),
       },
       {
         city: "London",
@@ -148,6 +160,7 @@ export const careers: Career[] = [
         jobAvailability: "High",
         costOfLiving: "High",
         visaRequirements: "Skilled Worker Visa",
+        imageUrl: getCityImageUrl("London"),
       },
       {
         city: "Hong Kong",
@@ -160,6 +173,7 @@ export const careers: Career[] = [
         jobAvailability: "Medium",
         costOfLiving: "High",
         visaRequirements: "Work Visa",
+        imageUrl: getCityImageUrl("Hong Kong"),
       },
     ],
   },
@@ -177,6 +191,7 @@ export const careers: Career[] = [
         jobAvailability: "High",
         costOfLiving: "High",
         visaRequirements: "H1B Visa",
+        imageUrl: getCityImageUrl("San Francisco"),
       },
       {
         city: "Seattle",
@@ -189,6 +204,7 @@ export const careers: Career[] = [
         jobAvailability: "High",
         costOfLiving: "High",
         visaRequirements: "H1B Visa",
+        imageUrl: getCityImageUrl("Seattle"),
       },
       {
         city: "Austin",
@@ -201,6 +217,7 @@ export const careers: Career[] = [
         jobAvailability: "Medium",
         costOfLiving: "Medium",
         visaRequirements: "H1B Visa",
+        imageUrl: getCityImageUrl("Austin"),
       },
     ],
   },
@@ -218,6 +235,7 @@ export const careers: Career[] = [
         jobAvailability: "High",
         costOfLiving: "High",
         visaRequirements: "H1B Visa",
+        imageUrl: getCityImageUrl("San Francisco"),
       },
       {
         city: "New York City",
@@ -230,6 +248,7 @@ export const careers: Career[] = [
         jobAvailability: "High",
         costOfLiving: "High",
         visaRequirements: "H1B Visa",
+        imageUrl: getCityImageUrl("New York City"),
       },
       {
         city: "Amsterdam",
@@ -242,6 +261,7 @@ export const careers: Career[] = [
         jobAvailability: "Medium",
         costOfLiving: "Medium",
         visaRequirements: "EU Blue Card",
+        imageUrl: getCityImageUrl("Amsterdam"),
       },
     ],
   },

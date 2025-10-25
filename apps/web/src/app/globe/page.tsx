@@ -6,9 +6,12 @@ import { careers } from "@/constants/career-constants";
 import { universities } from "@/constants/university-constants";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 export default function GlobePage() {
-  const [selectedCareer, setSelectedCareer] = useState<string | null>(null);
+  const [selectedCareer, setSelectedCareer] = useState<string | null>(
+    "Software Engineering"
+  );
   const [mode, setMode] = useState<"career" | "university">("career");
   const [hoveredMarker, setHoveredMarker] = useState<any>(null);
   const [cursorPosition, setCursorPosition] = useState<{
@@ -28,14 +31,14 @@ export default function GlobePage() {
       return career.hotspots.map((hotspot) => ({
         id: `${hotspot.city}, ${hotspot.country}`,
         coordinates: hotspot.coordinates,
-        value: hotspot.intensity,
-        color: `hsl(${20 + hotspot.intensity * 10}, 70%, 50%)`, // Red-orange gradient
+        value: 50 + hotspot.intensity * 30, // Vary marker size: 80-200 based on intensity
+        color: "hsl(220, 70%, 50%)", // Single blue color for all markers
       }));
     } else {
       return universities.map((university) => ({
         id: university.name,
         coordinates: university.coordinates,
-        value: 1,
+        value: 100,
         color: "hsl(220, 70%, 50%)", // Blue
       }));
     }
@@ -77,22 +80,38 @@ export default function GlobePage() {
 
       if (hotspot) {
         return (
-          <div className="space-y-2">
-            <h3 className="font-bold text-lg">{hotspot.city}</h3>
-            <p className="text-sm text-muted-foreground">{hotspot.country}</p>
-            <div className="space-y-1 text-sm">
-              <p>
-                <span className="font-medium">Salary:</span>{" "}
-                {hotspot.salaryRange}
-              </p>
-              <p>
-                <span className="font-medium">Jobs:</span>{" "}
-                {hotspot.jobAvailability}
-              </p>
-              <p>
-                <span className="font-medium">Cost:</span>{" "}
-                {hotspot.costOfLiving}
-              </p>
+          <div className="space-y-3">
+            {/* City Image */}
+            {hotspot.imageUrl && (
+              <div className="relative w-full h-24 rounded-md overflow-hidden">
+                <Image
+                  src={hotspot.imageUrl}
+                  alt={`${hotspot.city} cityscape`}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 400px) 100vw, 300px"
+                />
+              </div>
+            )}
+
+            {/* City Info */}
+            <div className="space-y-2">
+              <h3 className="font-bold text-lg">{hotspot.city}</h3>
+              <p className="text-sm text-muted-foreground">{hotspot.country}</p>
+              <div className="space-y-1 text-sm">
+                <p>
+                  <span className="font-medium">Salary:</span>{" "}
+                  {hotspot.salaryRange}
+                </p>
+                <p>
+                  <span className="font-medium">Jobs:</span>{" "}
+                  {hotspot.jobAvailability}
+                </p>
+                <p>
+                  <span className="font-medium">Cost:</span>{" "}
+                  {hotspot.costOfLiving}
+                </p>
+              </div>
             </div>
           </div>
         );
@@ -202,11 +221,17 @@ export default function GlobePage() {
           markers={markers}
           options={{
             enableCameraAutoRotate: false,
+            cameraAutoRotateSpeed: 0,
             focusAnimationDuration: 100,
+            markerType: "bar",
+            markerRadiusScaleRange: [0.2, 1.2], // Much wider range for dramatic size differences
+            enableMarkerTooltip: false, // Disable coordinate tooltips
           }}
           onClickMarker={handleMarkerClick}
           onMouseOverMarker={handleMarkerHover}
           onMouseOutMarker={handleMarkerLeave}
+          width={800}
+          height={600}
         />
 
         {/* Cursor-following Card */}
@@ -218,7 +243,7 @@ export default function GlobePage() {
               top: cursorPosition.y - 10,
             }}
           >
-            <Card className="p-4 max-w-sm shadow-lg border-2">
+            <Card className="p-4 max-w-xs shadow-lg border-2">
               {getMarkerCardContent(hoveredMarker)}
             </Card>
           </div>
