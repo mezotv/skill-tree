@@ -11,6 +11,28 @@ import { ArrowRight, Loader2 } from "lucide-react"
 
 const SAMPLE_JOBS = ["Software Engineer", "Data Scientist", "Product Manager", "UX Designer", "Marketing Manager"]
 
+type JobSuggestion = {
+  title: string
+  relevance: string
+}
+
+type JobsEnvelope = {
+  jobs: JobSuggestion[]
+}
+
+function isJobsEnvelope(value: unknown): value is JobsEnvelope {
+  if (typeof value !== "object" || value === null) return false
+  const maybe = value as { jobs?: unknown }
+  if (!Array.isArray(maybe.jobs)) return false
+  return maybe.jobs.every(
+    (item) =>
+      typeof item === "object" &&
+      item !== null &&
+      typeof (item as { title?: unknown }).title === "string" &&
+      typeof (item as { relevance?: unknown }).relevance === "string",
+  )
+}
+
 export default function Home() {
   const [query, setQuery] = useState("")
   const [suggestions, setSuggestions] = useState<string[]>(SAMPLE_JOBS)
@@ -27,14 +49,35 @@ export default function Home() {
     setSuggestions([])
 
     try {
-      const response = await fetch("/api/suggest-jobs", {
+      const response = await fetch("/api/ai/suggest-jobs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query }),
       })
 
-      if (!response.ok) throw new Error(JSON.stringify(response))
-      if (!response.ok) throw new Error("Failed to fetch suggestions")
+      if (!response.ok) {
+        let message = `${response.status} ${response.statusText}`
+        try {
+          const text = await response.text()
+          if (text) {
+            try {
+              const data = JSON.parse(text) as unknown
+              const fromJson =
+                (typeof data === "object" && data !== null && "error" in data && typeof (data as { error?: unknown }).error === "string"
+                  ? (data as { error: string }).error
+                  : undefined) ||
+                (typeof data === "object" && data !== null && "message" in data && typeof (data as { message?: unknown }).message === "string"
+                  ? (data as { message: string }).message
+                  : undefined)
+              if (fromJson) message = fromJson
+              else message = text
+            } catch {
+              message = text
+            }
+          }
+        } catch {}
+        throw new Error(message)
+      }
 
       const reader = response.body?.getReader()
       const decoder = new TextDecoder()
@@ -54,14 +97,16 @@ export default function Home() {
             buffer = lines.pop() || "" // Keep the last incomplete line in buffer
 
             for (const line of lines) {
-              if (line.trim()) {
-                const parsed = JSON.parse(line)
-                if (parsed.jobs && Array.isArray(parsed.jobs)) {
-                  setSuggestions(parsed.jobs.map((job: any) => job.title))
+              const trimmed = line.trim()
+              if (trimmed) {
+                const jsonCandidate = trimmed.startsWith("data:") ? trimmed.slice(5).trim() : trimmed
+                const parsed = JSON.parse(jsonCandidate) as unknown
+                if (isJobsEnvelope(parsed)) {
+                  setSuggestions(parsed.jobs.map((job) => job.title))
                 }
               }
             }
-          } catch (e) {
+          } catch {
             // Continue accumulating if JSON is incomplete
           }
         }
@@ -69,9 +114,10 @@ export default function Home() {
         // Try to parse any remaining buffer
         if (buffer.trim()) {
           try {
-            const parsed = JSON.parse(buffer)
-            if (parsed.jobs && Array.isArray(parsed.jobs)) {
-              setSuggestions(parsed.jobs.map((job: any) => job.title))
+            const remaining = buffer.trim().startsWith("data:") ? buffer.trim().slice(5).trim() : buffer
+            const parsed = JSON.parse(remaining) as unknown
+            if (isJobsEnvelope(parsed)) {
+              setSuggestions(parsed.jobs.map((job) => job.title))
             }
           } catch (e) {
             console.error("Failed to parse final buffer:", e)
@@ -140,9 +186,9 @@ export default function Home() {
                   <span className="text-sm">Finding relevant careers...</span>
                 </div>
               ) : suggestions.length > 0 ? (
-                suggestions.map((job, index) => (
+                suggestions.map((job) => (
                   <Badge
-                    key={`${job}-${index}`}
+                    key={job}
                     variant="outline"
                     className="cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors px-4 py-2 text-sm"
                     onClick={() => handleJobSelect(job)}
