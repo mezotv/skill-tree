@@ -152,7 +152,7 @@ export default function GlobePage() {
       {/* Globe View */}
       <div
         ref={globeRef}
-        className="flex-1 relative"
+        className="relative flex-1"
         onMouseMove={handleMouseMove}
       >
         <ReactGlobe
@@ -174,13 +174,13 @@ export default function GlobePage() {
         {/* Cursor-following Card */}
         {hoveredMarker && cursorPosition && (
           <div
-            className="absolute z-10 pointer-events-none"
+            className="pointer-events-none absolute z-10"
             style={{
               left: cursorPosition.x + 15,
               top: cursorPosition.y - 10,
             }}
           >
-            <Card className="p-4 max-w-xs shadow-lg border-2">
+            <Card className="max-w-sm border-2 p-4 shadow-lg">
               {getMarkerCardContent(hoveredMarker)}
             </Card>
           </div>
